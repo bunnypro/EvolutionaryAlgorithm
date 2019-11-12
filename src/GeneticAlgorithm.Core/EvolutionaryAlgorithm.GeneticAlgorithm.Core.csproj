@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Abstraction\EvolutionaryAlgorithm.Abstraction.csproj" />
+    <ProjectReference Include="..\Abstraction.Utility\EvolutionaryAlgorithm.Abstraction.Utility.csproj" />
+    <ProjectReference Include="..\Primitive\EvolutionaryAlgorithm.Primitive.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+</Project>
