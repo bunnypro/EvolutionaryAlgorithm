@@ -2,8 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Abstraction\EvolutionaryAlgorithm.Abstraction.csproj" />
-    <ProjectReference Include="..\Abstraction.Utility\EvolutionaryAlgorithm.Abstraction.Utility.csproj" />
-    <ProjectReference Include="..\Primitive\EvolutionaryAlgorithm.Primitive.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

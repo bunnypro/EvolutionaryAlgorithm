@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Primitive\EvolutionaryAlgorithm.Primitive.csproj" />
+    <ProjectReference Include="..\..\src\GeneticAlgorithm.NSGA2\EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2.csproj" />
   </ItemGroup>
 
 </Project>
