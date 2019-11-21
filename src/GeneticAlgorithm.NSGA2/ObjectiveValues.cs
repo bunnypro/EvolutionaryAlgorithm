@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
 {
-    public class ObjectiveValues<T> : IObjectiveValues<T>, IComparable<ObjectiveValues<T>>
+    public class ObjectiveValues<T> : IObjectiveValues<T>
     {
         private IReadOnlyDictionary<T, double> _objectiveValues;
         private readonly Comparer _comparer = new Comparer();
@@ -19,7 +19,7 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
         public IEnumerable<double> Values => _objectiveValues.Values;
         public int Count => _objectiveValues.Count;
 
-        public int CompareTo(ObjectiveValues<T> other)
+        public int CompareTo(IObjectiveValues<T> other)
         {
             return _comparer.Compare(this, other);
         }
