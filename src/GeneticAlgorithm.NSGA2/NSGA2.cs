@@ -44,14 +44,13 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
         {
             while (!token.IsCancellationRequested)
             {
+                var expectedCount = ExpectedResultCount ?? parents.Count;
                 var offspring = await _crossover.ReproduceAsync(parents, token);
                 var uniqueOffspring = offspring.Union(
                     await _mutation?.ReproduceAsync(parents, token) ?? new TChromosome[0])
                         .ToImmutableHashSet();
                 await _evaluator.EvaluateAsync(uniqueOffspring, token);
-                parents = await _reinsertion
-                    .SelectAsync(parents, offspring, ExpectedResultCount ?? parents.Count, token)
-                    ?? offspring.ToImmutableHashSet();
+                parents = await _reinsertion.SelectAsync(parents, offspring, expectedCount, token);
                 OnEvolvedOnce?.Invoke(parents);
             }
 

@@ -14,7 +14,10 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
         private readonly FastNondominatedSorter _sorter = new FastNondominatedSorter();
         private readonly IReadOnlyDictionary<TObjective, IObjectiveNormalizer<TChromosome>> _normalizer;
 
-        public OffspringSelector() { }
+        public OffspringSelector()
+        {
+        }
+
         public OffspringSelector(IReadOnlyDictionary<TObjective, IObjectiveNormalizer<TChromosome>> normalizer)
         {
             _normalizer = normalizer;
@@ -23,7 +26,7 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
         public async Task<ImmutableHashSet<TChromosome>> SelectAsync(
             IEnumerable<TChromosome> parents,
             IEnumerable<TChromosome> offspring,
-            int requiredOffspringCount,
+            int count,
             CancellationToken token)
         {
             var fronts = _sorter.Sort(offspring.Union(parents).ToImmutableHashSet(), new OffspringComparer());
@@ -33,16 +36,16 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
             foreach (var front in fronts)
             {
                 lastFront = front.ToList();
-                if (selectedOffspring.Count + lastFront.Count > requiredOffspringCount)
+                if (selectedOffspring.Count + lastFront.Count > count)
                 {
                     break;
                 }
                 selectedOffspring.AddRange(lastFront);
             }
 
-            if (selectedOffspring.Count >= requiredOffspringCount)
+            if (selectedOffspring.Count >= count)
             {
-                return selectedOffspring.Take(requiredOffspringCount).ToImmutableHashSet();
+                return selectedOffspring.Take(count).ToImmutableHashSet();
             }
 
             var calculatable = lastFront.Union(selectedOffspring).ToArray();
@@ -58,7 +61,7 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
                 });
 
             return aggregatedDistances.OrderByDescending(c => c.Value)
-                .Take(requiredOffspringCount)
+                .Take(count)
                 .Select(c => c.Key)
                 .ToImmutableHashSet();
         }
