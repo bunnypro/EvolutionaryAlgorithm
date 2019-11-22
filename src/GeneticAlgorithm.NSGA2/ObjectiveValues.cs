@@ -6,7 +6,7 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
     public class ObjectiveValues<T> : IObjectiveValues<T>
     {
         private IReadOnlyDictionary<T, double> _objectiveValues;
-        private readonly Comparer _comparer = new Comparer();
+        public static readonly IComparer<IObjectiveValues<T>> ObjectiveComparer = new Comparer();
 
         public ObjectiveValues(IReadOnlyDictionary<T, double> values)
         {
@@ -20,7 +20,7 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
 
         public int CompareTo(IObjectiveValues<T> other)
         {
-            return _comparer.Compare(this, other);
+            return ObjectiveComparer.Compare(this, other);
         }
 
         public bool ContainsKey(T key) => _objectiveValues.ContainsKey(key);
@@ -37,7 +37,7 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public class Comparer : IComparer<IObjectiveValues<T>>
+        private class Comparer : IComparer<IObjectiveValues<T>>
         {
             public int Compare(IObjectiveValues<T> x, IObjectiveValues<T> y)
             {

@@ -96,9 +96,6 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
 
         private class OffspringComparer : IComparer<TChromosome>
         {
-            private readonly IComparer<IObjectiveValues<TObjective>> _comparer =
-                new ObjectiveValues<TObjective>.Comparer();
-
             public int Compare(TChromosome x, TChromosome y)
             {
                 if (x.Fitness is IComparable<IObjectiveValues<TObjective>> comparable)
@@ -106,7 +103,7 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
                     return comparable.CompareTo(y.Fitness);
                 }
 
-                return _comparer.Compare(x.Fitness, y.Fitness);
+                return ObjectiveValues<TObjective>.ObjectiveComparer.Compare(x.Fitness, y.Fitness);
             }
         }
     }
