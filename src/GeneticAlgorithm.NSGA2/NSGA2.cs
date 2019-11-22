@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -7,25 +8,24 @@ using EvolutionaryAlgorithm.Abstraction;
 
 namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
 {
-    public class NSGA2<TChromosome, TObjective> :
-        IEvolutionaryAlgorithm<TChromosome, IObjectiveValues<TObjective>>
+    public class NSGA2<TChromosome, TObjective> : IEvolutionaryAlgorithm<TChromosome>
         where TChromosome : IChromosome<IObjectiveValues<TObjective>>
     {
-        private readonly IReproduction<TChromosome, IObjectiveValues<TObjective>> _crossover;
-        private readonly IReproduction<TChromosome, IObjectiveValues<TObjective>> _mutation;
-        private readonly IEvaluator<TChromosome, IObjectiveValues<TObjective>> _evaluator;
-        private IReinsertion<TChromosome, IObjectiveValues<TObjective>> _reinsertion =
+        private readonly IReproduction<TChromosome> _crossover;
+        private readonly IReproduction<TChromosome> _mutation;
+        private readonly IEvaluator<TChromosome> _evaluator;
+        private IReinsertion<TChromosome> _reinsertion =
             new OffspringSelector<TChromosome, TObjective>();
 
-        public NSGA2(IReproduction<TChromosome, IObjectiveValues<TObjective>> crossover,
-            IReproduction<TChromosome, IObjectiveValues<TObjective>> mutation,
-            IEvaluator<TChromosome, IObjectiveValues<TObjective>> evaluator) : this(crossover, evaluator)
+        public NSGA2(IReproduction<TChromosome> crossover,
+            IReproduction<TChromosome> mutation,
+            IEvaluator<TChromosome> evaluator) : this(crossover, evaluator)
         {
             _mutation = mutation;
         }
 
-        public NSGA2(IReproduction<TChromosome, IObjectiveValues<TObjective>> crossover,
-            IEvaluator<TChromosome, IObjectiveValues<TObjective>> evaluator)
+        public NSGA2(IReproduction<TChromosome> crossover,
+            IEvaluator<TChromosome> evaluator)
         {
             _crossover = crossover;
             _evaluator = evaluator;
@@ -34,7 +34,7 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
         public event Action<ImmutableHashSet<TChromosome>> OnEvolvedOnce;
 
         public int? ExpectedResultCount { get; set; } = null;
-        public IObjectiveNormalizer<TChromosome, TObjective> Normalizer
+        public IReadOnlyDictionary<TObjective, IObjectiveNormalizer<TChromosome>> Normalizer
         {
             set
             {

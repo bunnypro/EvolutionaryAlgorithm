@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace EvolutionaryAlgorithm.Abstraction
 {
-    public interface IEvaluator<TChromosome, TFitness> where TChromosome : IChromosome<TFitness>
+    public interface IEvaluator<TChromosome>
     {
         Task EvaluateAsync(IEnumerable<TChromosome> chromosomes, CancellationToken token);
     }

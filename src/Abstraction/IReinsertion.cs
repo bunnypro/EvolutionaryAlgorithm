@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace EvolutionaryAlgorithm.Abstraction
 {
-    public interface IReinsertion<TChromosome, TFitness> where TChromosome : IChromosome<TFitness>
+    public interface IReinsertion<TChromosome>
     {
         Task<ImmutableHashSet<TChromosome>> SelectAsync(
             IEnumerable<TChromosome> parents,

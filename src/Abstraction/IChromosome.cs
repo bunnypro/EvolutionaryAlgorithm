@@ -2,8 +2,8 @@ using System;
 
 namespace EvolutionaryAlgorithm.Abstraction
 {
-    public interface IChromosome<T> : IEquatable<IChromosome<T>>
+    public interface IChromosome<TFitness> : IEquatable<IChromosome<TFitness>>
     {
-        T Fitness { get; }
+        TFitness Fitness { get; }
     }
 }

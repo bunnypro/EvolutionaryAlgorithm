@@ -8,15 +8,14 @@ using EvolutionaryAlgorithm.Abstraction;
 
 namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
 {
-    public class OffspringSelector<TChromosome, TObjective> :
-        IReinsertion<TChromosome, IObjectiveValues<TObjective>>
+    public class OffspringSelector<TChromosome, TObjective> : IReinsertion<TChromosome>
         where TChromosome : IChromosome<IObjectiveValues<TObjective>>
     {
         private readonly FastNondominatedSorter _sorter = new FastNondominatedSorter();
-        private readonly IObjectiveNormalizer<TChromosome, TObjective> _normalizer;
+        private readonly IReadOnlyDictionary<TObjective, IObjectiveNormalizer<TChromosome>> _normalizer;
 
         public OffspringSelector() { }
-        public OffspringSelector(IObjectiveNormalizer<TChromosome, TObjective> normalizer)
+        public OffspringSelector(IReadOnlyDictionary<TObjective, IObjectiveNormalizer<TChromosome>> normalizer)
         {
             _normalizer = normalizer;
         }
@@ -69,7 +68,7 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
             IEnumerable<TChromosome> chromosomes)
         {
             var distances = chromosomes.ToDictionary(c => c, _ => 0d);
-            var normalized = await _normalizer?[objective]?.Invoke(distances.Keys)
+            var normalized = await _normalizer?[objective]?.Normalize(distances.Keys)
                 ?? chromosomes.ToDictionary(c => c, c => c.Fitness[objective]);
             var ordered = normalized.OrderBy(n => n.Value).ToArray();
             var lowest = ordered.First();
