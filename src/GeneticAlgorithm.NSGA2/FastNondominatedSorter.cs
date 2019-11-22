@@ -7,12 +7,12 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
 {
     public class FastNondominatedSorter
     {
-        public IEnumerable<IEnumerable<T>> Sort<T>(IEnumerable<T> items) where T : IComparable
+        public static IEnumerable<IEnumerable<T>> Sort<T>(IEnumerable<T> items) where T : IComparable
         {
             return Sort(items, new Comparer<T>());
         }
 
-        public IEnumerable<IEnumerable<T>> Sort<T>(IEnumerable<T> items, IComparer<T> comparer)
+        public static IEnumerable<IEnumerable<T>> Sort<T>(IEnumerable<T> items, IComparer<T> comparer)
         {
             var (front, countBag, itemsBag) = CalculateFirstFront(items, comparer);
 
@@ -35,7 +35,7 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
             }
         }
 
-        private (ImmutableArray<T>.Builder, Dictionary<T, int>, Dictionary<T, List<T>>)
+        private static (ImmutableArray<T>.Builder, Dictionary<T, int>, Dictionary<T, List<T>>)
             CalculateFirstFront<T>(IEnumerable<T> shuffledItem, IComparer<T> comparer)
         {
             var items = shuffledItem.ToArray();

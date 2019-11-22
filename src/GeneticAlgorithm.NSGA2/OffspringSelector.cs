@@ -11,7 +11,6 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
     public class OffspringSelector<TChromosome, TObjective> : IReinsertion<TChromosome>
         where TChromosome : IChromosome<IObjectiveValues<TObjective>>
     {
-        private readonly FastNondominatedSorter _sorter = new FastNondominatedSorter();
         private readonly IReadOnlyDictionary<TObjective, IObjectiveNormalizer<TChromosome>> _normalizer;
 
         public OffspringSelector()
@@ -29,7 +28,10 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
             int count,
             CancellationToken token)
         {
-            var fronts = _sorter.Sort(offspring.Union(parents).ToImmutableHashSet(), new OffspringComparer());
+            var fronts = FastNondominatedSorter.Sort(
+                offspring.Union(parents).ToImmutableHashSet(),
+                new OffspringComparer());
+
             var selectedOffspring = new List<TChromosome>();
             var lastFront = new List<TChromosome>();
 

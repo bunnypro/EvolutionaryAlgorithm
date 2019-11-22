@@ -14,11 +14,10 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2.Test
         {
             //Given
             var random = new Random();
-            var sorter = new FastNondominatedSorter();
             var shuffledItem = sortedItem.SelectMany(items => items).OrderBy(_ => random.Next()).ToArray();
 
             // When
-            var result = sorter.Sort(shuffledItem, new ObjectiveComparer()).ToArray();
+            var result = FastNondominatedSorter.Sort(shuffledItem, new ObjectiveComparer()).ToArray();
 
             //Then
             Assert.True(sortedItem.SequenceEqual(result, new FrontEqualityComparer()));
