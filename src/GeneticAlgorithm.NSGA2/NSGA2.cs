@@ -14,33 +14,29 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
         private readonly IReproduction<TChromosome> _crossover;
         private readonly IReproduction<TChromosome> _mutation;
         private readonly IEvaluator<TChromosome> _evaluator;
-        private IReinsertion<TChromosome> _reinsertion =
-            new OffspringSelector<TChromosome, TObjective>();
+        private IReinsertion<TChromosome> _reinsertion;
 
         public NSGA2(IReproduction<TChromosome> crossover,
             IReproduction<TChromosome> mutation,
-            IEvaluator<TChromosome> evaluator) : this(crossover, evaluator)
+            IEvaluator<TChromosome> evaluator,
+            IReadOnlyDictionary<TObjective, IObjectiveNormalizer<TChromosome>> normalizer = null) :
+            this(crossover, evaluator, normalizer)
         {
             _mutation = mutation;
         }
 
         public NSGA2(IReproduction<TChromosome> crossover,
-            IEvaluator<TChromosome> evaluator)
+            IEvaluator<TChromosome> evaluator,
+            IReadOnlyDictionary<TObjective, IObjectiveNormalizer<TChromosome>> normalizer = null)
         {
             _crossover = crossover;
             _evaluator = evaluator;
+            _reinsertion = new OffspringSelector<TChromosome, TObjective>(normalizer);
         }
 
         public event Action<ImmutableHashSet<TChromosome>> OnEvolvedOnce;
 
         public int? ExpectedResultCount { get; set; } = null;
-        public IReadOnlyDictionary<TObjective, IObjectiveNormalizer<TChromosome>> Normalizer
-        {
-            set
-            {
-                _reinsertion = new OffspringSelector<TChromosome, TObjective>(value);
-            }
-        }
 
         public async Task<ImmutableHashSet<TChromosome>> EvolveAsync(
             ImmutableHashSet<TChromosome> parents,
