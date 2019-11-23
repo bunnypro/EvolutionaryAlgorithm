@@ -5,8 +5,9 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
 {
     public class ObjectiveValues<T> : IObjectiveValues<T>
     {
-        private IReadOnlyDictionary<T, double> _objectiveValues;
         public static readonly IComparer<IObjectiveValues<T>> ObjectiveComparer = new Comparer();
+
+        private IReadOnlyDictionary<T, double> _objectiveValues;
 
         public ObjectiveValues(IReadOnlyDictionary<T, double> values)
         {
