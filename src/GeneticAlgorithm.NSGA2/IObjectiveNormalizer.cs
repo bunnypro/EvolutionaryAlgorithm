@@ -5,6 +5,6 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
 {
     public interface IObjectiveNormalizer<TChromosome>
     {
-        Task<IReadOnlyDictionary<TChromosome, double>> Normalize(IEnumerable<TChromosome> chromosomes);
+        Task<IReadOnlyDictionary<TChromosome, double>> NormalizeAsync(IEnumerable<TChromosome> chromosomes);
     }
 }

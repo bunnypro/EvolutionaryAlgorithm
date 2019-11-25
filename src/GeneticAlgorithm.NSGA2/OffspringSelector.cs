@@ -73,8 +73,7 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
             IEnumerable<TChromosome> chromosomes)
         {
             var distances = chromosomes.ToDictionary(c => c, _ => 0d);
-            var normalized = await _normalizer?[objective]?.Normalize(distances.Keys)
-                ?? chromosomes.ToDictionary(c => c, c => c.Fitness[objective]);
+            var normalized = await NormalizeAsync(objective, chromosomes);
             var ordered = normalized.OrderBy(n => n.Value).ToArray();
             var lowest = ordered.First();
             var highest = ordered.Last();
@@ -92,6 +91,17 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
                 distances[ordered[i].Key] += distance;
             }
             return distances;
+        }
+
+        private async Task<IReadOnlyDictionary<TChromosome, double>> NormalizeAsync(
+            TObjective objective, IEnumerable<TChromosome> chromosomes)
+        {
+            if (_normalizer != null && _normalizer.ContainsKey(objective))
+            {
+                return await _normalizer[objective].NormalizeAsync(chromosomes);
+            }
+
+            return chromosomes.ToDictionary(c => c, c => c.Fitness[objective]);
         }
 
         private class OffspringComparer : IComparer<TChromosome>
