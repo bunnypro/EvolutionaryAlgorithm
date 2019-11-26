@@ -9,7 +9,6 @@ using EvolutionaryAlgorithm.Abstraction;
 namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
 {
     public class NSGA2<TChromosome, TObjective> : IEvolutionaryAlgorithm<TChromosome>
-        where TChromosome : IChromosome<IObjectiveValues<TObjective>>
     {
         private readonly IReproduction<TChromosome> _crossover;
         private readonly IReproduction<TChromosome> _mutation;
