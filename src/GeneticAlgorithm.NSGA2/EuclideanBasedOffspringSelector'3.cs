@@ -69,14 +69,16 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
                 }
 
                 var orderedChromosome = calculatable.OrderBy(chromosome =>
-                    _mapper.GetValue(objective, chromosome.Fitness))
-                .ToImmutableArray();
+                        _mapper.GetValue(objective, chromosome.Fitness))
+                    .ThenBy(chromosome =>
+                        _objectives.Average(obj => _mapper.GetValue(obj, chromosome.Fitness)))
+                    .ToImmutableArray();
 
                 var first = orderedChromosome.First();
                 var last = orderedChromosome.Last();
-                var longestDistance = CalculateDistance(first, last);
 
                 var distances = calculatable.ToDictionary(chromosome => chromosome, _ => 0d);
+                var longestDistance = CalculateDistance(first, last);
                 distances[first] += longestDistance;
                 distances[last] += longestDistance;
 
