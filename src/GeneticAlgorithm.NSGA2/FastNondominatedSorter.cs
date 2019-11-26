@@ -36,34 +36,34 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
         }
 
         private static (ImmutableArray<T>.Builder, Dictionary<T, int>, Dictionary<T, List<T>>)
-            CalculateFirstFront<T>(IEnumerable<T> shuffledItem, IComparer<T> comparer)
+            CalculateFirstFront<T>(IEnumerable<T> items, IComparer<T> comparer)
         {
-            var items = shuffledItem.ToArray();
-            var countBag = items.ToDictionary(item => item, _ => 0);
-            var itemsBag = items.ToDictionary(item => item, _ => new List<T>());
+            var itemsArray = items.ToArray();
+            var countBag = itemsArray.ToDictionary(item => item, _ => 0);
+            var itemsBag = itemsArray.ToDictionary(item => item, _ => new List<T>());
             var front = ImmutableArray.CreateBuilder<T>();
 
-            for (var i = 0; i < items.Length; i++)
+            for (var i = 0; i < itemsArray.Length; i++)
             {
-                for (var j = i + 1; j < items.Length; j++)
+                for (var j = i + 1; j < itemsArray.Length; j++)
                 {
-                    var sign = comparer.Compare(items[i], items[j]);
+                    var sign = comparer.Compare(itemsArray[i], itemsArray[j]);
 
                     if (sign > 0)
                     {
-                        itemsBag[items[i]].Add(items[j]);
-                        countBag[items[j]]++;
+                        itemsBag[itemsArray[i]].Add(itemsArray[j]);
+                        countBag[itemsArray[j]]++;
                     }
                     else if (sign < 0)
                     {
-                        itemsBag[items[j]].Add(items[i]);
-                        countBag[items[i]]++;
+                        itemsBag[itemsArray[j]].Add(itemsArray[i]);
+                        countBag[itemsArray[i]]++;
                     }
                 }
 
-                if (countBag[items[i]] == 0)
+                if (countBag[itemsArray[i]] == 0)
                 {
-                    front.Add(items[i]);
+                    front.Add(itemsArray[i]);
                 }
             }
 
