@@ -8,14 +8,14 @@ using EvolutionaryAlgorithm.Abstraction;
 
 namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
 {
-    public class OffspringSelector<TChromosome, TObjective, TObjectivesValue> : IReinsertion<TChromosome>
+    public class EuclideanBasedOffspringSelector<TChromosome, TObjective, TObjectivesValue> : IReinsertion<TChromosome>
         where TChromosome : IChromosome<TObjectivesValue>
     {
         private readonly IEnumerable<TObjective> _objectives;
         private readonly IObjectivesValueMapper<TObjective, TObjectivesValue> _mapper;
         private readonly IComparer<TChromosome> _offspringComparer;
 
-        public OffspringSelector(IEnumerable<TObjective> objectives,
+        public EuclideanBasedOffspringSelector(IEnumerable<TObjective> objectives,
             IObjectivesValueMapper<TObjective, TObjectivesValue> mapper,
             IComparer<TObjectivesValue> comparer)
         {
