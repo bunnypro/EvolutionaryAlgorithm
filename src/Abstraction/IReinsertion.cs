@@ -10,7 +10,7 @@ namespace EvolutionaryAlgorithm.Abstraction
         Task<ImmutableHashSet<TChromosome>> SelectAsync(
             IEnumerable<TChromosome> parents,
             IEnumerable<TChromosome> offspring,
-            int count,
+            int expectedOffspringCount,
             CancellationToken token);
     }
 }
