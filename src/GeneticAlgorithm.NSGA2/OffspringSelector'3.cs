@@ -12,12 +12,12 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
         where TChromosome : IChromosome<TObjectivesValues>
     {
         private readonly IComparer<TChromosome> _offspringComparer;
-        private readonly IObjectivesValuesMapper<TObjectivesValues, TObjective> _mapper;
+        private readonly IObjectivesValuesHelper<TObjectivesValues, TObjective> _helper;
 
-        public OffspringSelector(IObjectivesValuesMapper<TObjectivesValues, TObjective> mapper)
+        public OffspringSelector(IObjectivesValuesHelper<TObjectivesValues, TObjective> helper)
         {
-            _mapper = mapper;
-            _offspringComparer = new OffspringFitnessComparer(_mapper.Comparer);
+            _helper = helper;
+            _offspringComparer = new OffspringFitnessComparer(_helper.Comparer);
         }
 
         public async Task<ImmutableHashSet<TChromosome>> SelectAsync(
@@ -55,17 +55,17 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
 
             var calculatable = lastFront.Union(selectedOffspring).ToArray();
 
-            var tasks = _mapper.Objectives.Select(async objective =>
+            var tasks = _helper.Objectives.Select(async objective =>
             {
                 double CalculateDistance(TChromosome left, TChromosome right)
                 {
-                    return Math.Sqrt(_mapper.Objectives.Sum(innerObjective =>
-                        Math.Pow(_mapper.GetObjectiveValue(innerObjective, left.Fitness) -
-                            _mapper.GetObjectiveValue(innerObjective, right.Fitness), 2)));
+                    return Math.Sqrt(_helper.Objectives.Sum(innerObjective =>
+                        Math.Pow(_helper.GetObjectiveValue(innerObjective, left.Fitness) -
+                            _helper.GetObjectiveValue(innerObjective, right.Fitness), 2)));
                 }
 
                 var orderedChromosome = calculatable.OrderBy(chromosome =>
-                    _mapper.GetObjectiveValue(objective, chromosome.Fitness))
+                    _helper.GetObjectiveValue(objective, chromosome.Fitness))
                 .ToImmutableArray();
 
                 var first = orderedChromosome.First();
@@ -103,16 +103,16 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
 
         private class OffspringFitnessComparer : IComparer<TChromosome>
         {
-            private readonly IComparer<TObjectivesValues> _mapper;
+            private readonly IComparer<TObjectivesValues> _helper;
 
-            public OffspringFitnessComparer(IComparer<TObjectivesValues> mapper)
+            public OffspringFitnessComparer(IComparer<TObjectivesValues> helper)
             {
-                _mapper = mapper;
+                _helper = helper;
             }
 
             public int Compare(TChromosome x, TChromosome y)
             {
-                return _mapper.Compare(x.Fitness, y.Fitness);
+                return _helper.Compare(x.Fitness, y.Fitness);
             }
         }
     }
