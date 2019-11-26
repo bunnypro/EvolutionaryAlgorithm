@@ -39,22 +39,25 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
         public int? ExpectedResultCount { get; set; } = null;
 
         public async Task<ImmutableHashSet<TChromosome>> EvolveAsync(
-            ImmutableHashSet<TChromosome> parents,
+            ImmutableHashSet<TChromosome> population,
             CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {
-                var expectedCount = ExpectedResultCount ?? parents.Count;
-                var offspring = await _crossover.ReproduceAsync(parents, token);
+                var expectedCount = ExpectedResultCount ?? population.Count;
+                var offspring = await _crossover.ReproduceAsync(population, token);
                 var uniqueOffspring = offspring.Union(
-                    await _mutation?.ReproduceAsync(parents, token) ?? new TChromosome[0])
-                        .ToImmutableHashSet();
+                        await _mutation?.ReproduceAsync(population, token) ??
+                            new TChromosome[0])
+                    .Union(population)
+                    .ToImmutableHashSet();
                 await _evaluator.EvaluateAsync(uniqueOffspring, token);
-                parents = await _reinsertion.SelectAsync(parents, offspring, expectedCount, token);
-                OnEvolvedOnce?.Invoke(parents);
+                population = await _reinsertion.SelectAsync(
+                    new TChromosome[] { }, uniqueOffspring, expectedCount, token);
+                OnEvolvedOnce?.Invoke(population);
             }
 
-            return parents;
+            return population;
         }
     }
 }
