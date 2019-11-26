@@ -80,9 +80,6 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
                 distances[first] += longestDistance;
                 distances[last] += longestDistance;
 
-                if (orderedChromosome.Length == 2)
-                    return distances;
-
                 var innerTasks = orderedChromosome.Skip(1).Take(orderedChromosome.Length - 2)
                     .Select((chromosome, i) => Task.Run(() =>
                     {
