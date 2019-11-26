@@ -8,16 +8,20 @@ using EvolutionaryAlgorithm.Abstraction;
 
 namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
 {
-    public class OffspringSelector<TChromosome, TObjectivesValues, TObjective> : IReinsertion<TChromosome>
-        where TChromosome : IChromosome<TObjectivesValues>
+    public class OffspringSelector<TChromosome, TObjective, TObjectivesValue> : IReinsertion<TChromosome>
+        where TChromosome : IChromosome<TObjectivesValue>
     {
+        private readonly IEnumerable<TObjective> _objectives;
+        private readonly IObjectivesValueMapper<TObjective, TObjectivesValue> _mapper;
         private readonly IComparer<TChromosome> _offspringComparer;
-        private readonly IObjectivesValuesHelper<TObjectivesValues, TObjective> _helper;
 
-        public OffspringSelector(IObjectivesValuesHelper<TObjectivesValues, TObjective> helper)
+        public OffspringSelector(IEnumerable<TObjective> objectives,
+            IObjectivesValueMapper<TObjective, TObjectivesValue> mapper,
+            IComparer<TObjectivesValue> comparer)
         {
-            _helper = helper;
-            _offspringComparer = new OffspringFitnessComparer(_helper.Comparer);
+            _objectives = objectives;
+            _mapper = mapper;
+            _offspringComparer = new ChromosomeFitnessComparer(comparer);
         }
 
         public async Task<ImmutableHashSet<TChromosome>> SelectAsync(
@@ -55,17 +59,17 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
 
             var calculatable = lastFront.Union(selectedOffspring).ToArray();
 
-            var tasks = _helper.Objectives.Select(async objective =>
+            var tasks = _objectives.Select(async objective =>
             {
                 double CalculateDistance(TChromosome left, TChromosome right)
                 {
-                    return Math.Sqrt(_helper.Objectives.Sum(innerObjective =>
-                        Math.Pow(_helper.GetObjectiveValue(innerObjective, left.Fitness) -
-                            _helper.GetObjectiveValue(innerObjective, right.Fitness), 2)));
+                    return Math.Sqrt(_objectives.Sum(innerObjective =>
+                        Math.Pow(_mapper.GetValue(innerObjective, left.Fitness) -
+                            _mapper.GetValue(innerObjective, right.Fitness), 2)));
                 }
 
                 var orderedChromosome = calculatable.OrderBy(chromosome =>
-                    _helper.GetObjectiveValue(objective, chromosome.Fitness))
+                    _mapper.GetValue(objective, chromosome.Fitness))
                 .ToImmutableArray();
 
                 var first = orderedChromosome.First();
@@ -101,18 +105,18 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
                 .ToImmutableHashSet();
         }
 
-        private class OffspringFitnessComparer : IComparer<TChromosome>
+        private class ChromosomeFitnessComparer : IComparer<TChromosome>
         {
-            private readonly IComparer<TObjectivesValues> _helper;
+            private readonly IComparer<TObjectivesValue> _comparer;
 
-            public OffspringFitnessComparer(IComparer<TObjectivesValues> helper)
+            public ChromosomeFitnessComparer(IComparer<TObjectivesValue> comparer)
             {
-                _helper = helper;
+                _comparer = comparer;
             }
 
             public int Compare(TChromosome x, TChromosome y)
             {
-                return _helper.Compare(x.Fitness, y.Fitness);
+                return _comparer.Compare(x.Fitness, y.Fitness);
             }
         }
     }
