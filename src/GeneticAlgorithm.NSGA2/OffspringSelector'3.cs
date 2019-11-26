@@ -82,8 +82,8 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
                 var innerTasks = orderedChromosome.Skip(1).Take(orderedChromosome.Length - 2)
                     .Select((chromosome, i) => Task.Run(() =>
                     {
-                        var upper = orderedChromosome[i + 1];
-                        var lower = orderedChromosome[i - 1];
+                        var upper = orderedChromosome[i + 2];
+                        var lower = orderedChromosome[i];
                         distances[chromosome] += CalculateDistance(upper, lower);
                     }, token));
 
@@ -96,6 +96,7 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
             return calculatable.ToDictionary(chromosome => chromosome, chromosome =>
                     allDistances.Sum(distances => distances[chromosome]))
                 .OrderByDescending(kv => kv.Value)
+                .Take(expectedOffspringCount)
                 .Select(kv => kv.Key)
                 .ToImmutableHashSet();
         }
