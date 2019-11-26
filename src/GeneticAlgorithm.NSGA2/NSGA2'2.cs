@@ -41,18 +41,22 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
             ImmutableHashSet<TChromosome> population,
             CancellationToken token)
         {
-            while (!token.IsCancellationRequested)
+            try
             {
-                var expectedCount = ExpectedResultCount ?? population.Count;
-                var offspring = await _crossover.ReproduceAsync(population, token);
-                if (_mutation != null)
-                    offspring = offspring.Union(await _mutation.ReproduceAsync(population, token));
-                var uniqueOffspring = offspring.Union(population).ToImmutableHashSet();
-                await _evaluator.EvaluateAsync(uniqueOffspring, token);
-                population = await _reinsertion.SelectAsync(
-                    new TChromosome[] { }, uniqueOffspring, expectedCount, token);
-                OnEvolvedOnce?.Invoke(population);
+                while (!token.IsCancellationRequested)
+                {
+                    var expectedCount = ExpectedResultCount ?? population.Count;
+                    var offspring = await _crossover.ReproduceAsync(population, token);
+                    if (_mutation != null)
+                        offspring = offspring.Union(await _mutation.ReproduceAsync(population, token));
+                    var uniqueOffspring = offspring.Union(population).ToImmutableHashSet();
+                    await _evaluator.EvaluateAsync(uniqueOffspring, token);
+                    population = await _reinsertion.SelectAsync(
+                        new TChromosome[] { }, uniqueOffspring, expectedCount, token);
+                    OnEvolvedOnce?.Invoke(population);
+                }
             }
+            catch (TaskCanceledException) { }
 
             return population;
         }
