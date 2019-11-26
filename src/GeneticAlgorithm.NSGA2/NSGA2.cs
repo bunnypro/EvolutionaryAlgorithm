@@ -19,19 +19,19 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
         public NSGA2(IReproduction<TChromosome> crossover,
             IReproduction<TChromosome> mutation,
             IEvaluator<TChromosome> evaluator,
-            IReadOnlyDictionary<TObjective, IObjectiveNormalizer<TChromosome>> normalizer = null) :
-            this(crossover, evaluator, normalizer)
+            IReinsertion<TChromosome> reinsertion) :
+            this(crossover, evaluator, reinsertion)
         {
             _mutation = mutation;
         }
 
         public NSGA2(IReproduction<TChromosome> crossover,
             IEvaluator<TChromosome> evaluator,
-            IReadOnlyDictionary<TObjective, IObjectiveNormalizer<TChromosome>> normalizer = null)
+            IReinsertion<TChromosome> reinsertion)
         {
             _crossover = crossover;
             _evaluator = evaluator;
-            _reinsertion = new OffspringSelector<TChromosome, TObjective>(normalizer);
+            _reinsertion = reinsertion;
         }
 
         public event Action<ImmutableHashSet<TChromosome>> OnEvolvedOnce;
