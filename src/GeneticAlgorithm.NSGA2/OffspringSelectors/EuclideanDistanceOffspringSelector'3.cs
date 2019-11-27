@@ -6,57 +6,29 @@ using System.Threading;
 using System.Threading.Tasks;
 using EvolutionaryAlgorithm.Abstraction;
 
-namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
+namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2.OffspingSelectors
 {
-    public class EuclideanBasedOffspringSelector<TChromosome, TObjective, TObjectivesValue> : IReinsertion<TChromosome>
+    public class EuclideanDistanceOffspringSelector<TChromosome, TObjective, TObjectivesValue> :
+        IOffspringSelector<TChromosome>
         where TChromosome : IChromosome<TObjectivesValue>
     {
         private readonly IEnumerable<TObjective> _objectives;
         private readonly IObjectivesValueMapper<TObjective, TObjectivesValue> _mapper;
-        private readonly IComparer<TChromosome> _offspringComparer;
 
-        public EuclideanBasedOffspringSelector(IEnumerable<TObjective> objectives,
-            IObjectivesValueMapper<TObjective, TObjectivesValue> mapper,
-            IComparer<TObjectivesValue> comparer)
+        public EuclideanDistanceOffspringSelector(
+            IEnumerable<TObjective> objectives,
+            IObjectivesValueMapper<TObjective, TObjectivesValue> mapper)
         {
             _objectives = objectives;
             _mapper = mapper;
-            _offspringComparer = new ChromosomeFitnessComparer(comparer);
         }
 
         public async Task<ImmutableHashSet<TChromosome>> SelectAsync(
-            IEnumerable<TChromosome> parents,
-            IEnumerable<TChromosome> offspring,
+            IEnumerable<TChromosome> selectedOffspring,
+            IEnumerable<TChromosome> lastFront,
             int expectedOffspringCount,
             CancellationToken token)
         {
-            var uniqueOffspring = offspring.ToImmutableHashSet();
-
-            if (uniqueOffspring.Count <= expectedOffspringCount)
-            {
-                return uniqueOffspring;
-            }
-
-            var fronts = FastNondominatedSorter.Sort(uniqueOffspring, _offspringComparer);
-
-            var selectedOffspring = new List<TChromosome>();
-            IEnumerable<TChromosome> lastFront = new TChromosome[] { };
-
-            foreach (var front in fronts)
-            {
-                if (selectedOffspring.Count + front.Count() > expectedOffspringCount)
-                {
-                    lastFront = front;
-                    break;
-                }
-                selectedOffspring.AddRange(front);
-            }
-
-            if (selectedOffspring.Count >= expectedOffspringCount)
-            {
-                return selectedOffspring.Take(expectedOffspringCount).ToImmutableHashSet();
-            }
-
             var calculatable = lastFront.Union(selectedOffspring).ToArray();
 
             var tasks = _objectives.Select(async objective =>
@@ -102,21 +74,6 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
                 .Take(expectedOffspringCount)
                 .Select(kv => kv.Key)
                 .ToImmutableHashSet();
-        }
-
-        private class ChromosomeFitnessComparer : IComparer<TChromosome>
-        {
-            private readonly IComparer<TObjectivesValue> _comparer;
-
-            public ChromosomeFitnessComparer(IComparer<TObjectivesValue> comparer)
-            {
-                _comparer = comparer;
-            }
-
-            public int Compare(TChromosome x, TChromosome y)
-            {
-                return _comparer.Compare(x.Fitness, y.Fitness);
-            }
         }
     }
 }
