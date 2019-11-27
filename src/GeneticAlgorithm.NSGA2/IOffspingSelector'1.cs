@@ -8,7 +8,7 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
     public interface IOffspringSelector<TChromosome>
     {
         Task<ImmutableHashSet<TChromosome>> SelectAsync(
-            IEnumerable<TChromosome> selectedOffspring,
+            IEnumerable<TChromosome> eliteOffspring,
             IEnumerable<TChromosome> lastFront,
             int expectedOffspringCount,
             CancellationToken token);

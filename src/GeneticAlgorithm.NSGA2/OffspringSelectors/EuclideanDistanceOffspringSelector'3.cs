@@ -24,12 +24,12 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2.OffspingSelectors
         }
 
         public async Task<ImmutableHashSet<TChromosome>> SelectAsync(
-            IEnumerable<TChromosome> selectedOffspring,
+            IEnumerable<TChromosome> eliteOffspring,
             IEnumerable<TChromosome> lastFront,
             int expectedOffspringCount,
             CancellationToken token)
         {
-            var calculatable = lastFront.Union(selectedOffspring).ToArray();
+            var calculatable = lastFront.Union(eliteOffspring).ToArray();
 
             var tasks = _objectives.Select(async objective =>
             {
