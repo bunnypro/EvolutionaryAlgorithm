@@ -33,13 +33,6 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2.OffspingSelectors
 
             var tasks = _objectives.Select(async objective =>
             {
-                double CalculateDistance(TChromosome left, TChromosome right)
-                {
-                    return Math.Sqrt(_objectives.Sum(innerObjective =>
-                        Math.Pow(_mapper.GetValue(innerObjective, left.Fitness) -
-                            _mapper.GetValue(innerObjective, right.Fitness), 2)));
-                }
-
                 var orderedChromosome = calculatable.OrderBy(chromosome =>
                         _mapper.GetValue(objective, chromosome.Fitness))
                     .ThenBy(chromosome =>
@@ -74,6 +67,13 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2.OffspingSelectors
                 .Take(expectedOffspringCount)
                 .Select(kv => kv.Key)
                 .ToImmutableHashSet();
+        }
+
+        private double CalculateDistance(TChromosome left, TChromosome right)
+        {
+            return Math.Sqrt(_objectives.Sum(innerObjective =>
+                Math.Pow(_mapper.GetValue(innerObjective, left.Fitness) -
+                    _mapper.GetValue(innerObjective, right.Fitness), 2)));
         }
     }
 }
