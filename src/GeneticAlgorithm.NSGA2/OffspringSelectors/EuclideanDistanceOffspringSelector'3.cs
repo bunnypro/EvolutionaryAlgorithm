@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EvolutionaryAlgorithm.Abstraction;
 
-namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2.OffspingSelectors
+namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2.OffspringSelectors
 {
     public class EuclideanDistanceOffspringSelector<TChromosome, TObjective, TObjectivesValue> :
         IOffspringSelector<TChromosome>
