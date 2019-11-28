@@ -55,7 +55,10 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
                 return selectedOffspring.Take(expectedOffspringCount).ToImmutableHashSet();
             }
 
-            return await _selector.SelectAsync(selectedOffspring, lastFront, expectedOffspringCount, token);
+            return await _selector.SelectAsync(
+                selectedOffspring.ToImmutableHashSet(),
+                lastFront.ToImmutableHashSet(),
+                expectedOffspringCount, token);
         }
 
         private class ChromosomeFitnessComparer : IComparer<TChromosome>

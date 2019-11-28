@@ -8,14 +8,14 @@ using EvolutionaryAlgorithm.Abstraction;
 
 namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2.OffspringSelectors
 {
-    public class NSGA2DefaultOffspringSelector<TChromosome, TObjective, TObjectivesValue> :
+    public abstract class NSGA2OffspringSelectorBase<TChromosome, TObjective, TObjectivesValue> :
         IOffspringSelector<TChromosome>
         where TChromosome : IChromosome<TObjectivesValue>
     {
         private readonly IEnumerable<TObjective> _objectives;
         private readonly IObjectivesValueMapper<TObjective, TObjectivesValue> _mapper;
 
-        public NSGA2DefaultOffspringSelector(
+        public NSGA2OffspringSelectorBase(
             IEnumerable<TObjective> objectives,
             IObjectivesValueMapper<TObjective, TObjectivesValue> mapper)
         {
@@ -24,17 +24,16 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2.OffspringSelectors
         }
 
         public Task<ImmutableHashSet<TChromosome>> SelectAsync(
-            IEnumerable<TChromosome> eliteOffspring,
-            IEnumerable<TChromosome> lastFront,
+            ImmutableHashSet<TChromosome> eliteOffspring,
+            ImmutableHashSet<TChromosome> lastFront,
             int expectedOffspringCount,
             CancellationToken token)
         {
-            var elite = eliteOffspring.ToImmutableHashSet();
-            var last = lastFront.Except(elite).ToImmutableHashSet();
-            var joined = last.Union(elite);
-            var remainingCount = expectedOffspringCount - elite.Count;
+            var joined = lastFront.Union(eliteOffspring);
+            var remainingCount = expectedOffspringCount - eliteOffspring.Count;
 
-            var distances = last.ToDictionary(chromosome => chromosome, _ => 0d);
+            var measurable = SelectMeasurableOffspring(eliteOffspring, lastFront)
+                .ToDictionary(chromosome => chromosome, _ => 0d);
 
             foreach (var objective in _objectives)
             {
@@ -50,8 +49,8 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2.OffspringSelectors
 
                 foreach (var chromosome in firstLast)
                 {
-                    if (!distances.ContainsKey(chromosome)) continue;
-                    distances[chromosome] += longestDistance;
+                    if (!measurable.ContainsKey(chromosome)) continue;
+                    measurable[chromosome] += longestDistance;
                 }
 
                 if (orderedGrouped.Length == 2) continue;
@@ -64,19 +63,29 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2.OffspringSelectors
 
                     foreach (var chromosome in orderedGrouped[i])
                     {
-                        if (!distances.ContainsKey(chromosome)) continue;
-                        distances[chromosome] += distance;
+                        if (!measurable.ContainsKey(chromosome)) continue;
+                        measurable[chromosome] += distance;
                     }
                 }
             }
 
-            var selected = elite.Union(
-                    distances.OrderByDescending(kv => kv.Value)
-                        .Take(remainingCount)
-                        .Select(kv => kv.Key))
-                .ToImmutableHashSet();
+            var selected = FilterMeasuredOffspring(
+                eliteOffspring,
+                measurable,
+                expectedOffspringCount,
+                remainingCount);
 
             return Task.FromResult(selected);
         }
+
+        protected abstract ImmutableHashSet<TChromosome> SelectMeasurableOffspring(
+            ImmutableHashSet<TChromosome> elite,
+            ImmutableHashSet<TChromosome> last);
+
+        protected abstract ImmutableHashSet<TChromosome> FilterMeasuredOffspring(
+            ImmutableHashSet<TChromosome> elite,
+            IReadOnlyDictionary<TChromosome, double> measured,
+            int requiredCount,
+            int remainingCount);
     }
 }
