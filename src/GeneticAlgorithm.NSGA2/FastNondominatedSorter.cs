@@ -7,12 +7,15 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
 {
     public class FastNondominatedSorter
     {
-        public static IEnumerable<IEnumerable<T>> Sort<T>(IEnumerable<T> items) where T : IComparable
+        public static IEnumerable<IEnumerable<T>> Sort<T>(IEnumerable<T> items)
+            where T : IComparable
         {
             return Sort(items, new Comparer<T>());
         }
 
-        public static IEnumerable<IEnumerable<T>> Sort<T>(IEnumerable<T> items, IComparer<T> comparer)
+        public static IEnumerable<IEnumerable<T>> Sort<T>(
+            IEnumerable<T> items,
+            IComparer<T> comparer)
         {
             var (front, countBag, itemsBag) = CalculateFirstFront(items, comparer);
 

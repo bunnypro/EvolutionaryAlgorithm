@@ -8,7 +8,8 @@ using EvolutionaryAlgorithm.Abstraction;
 
 namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
 {
-    public class NSGAReinsertion<TChromosome, TObjectivesValue> : IReinsertion<TChromosome>
+    public class NSGAReinsertion<TChromosome, TObjectivesValue> :
+        IReinsertion<TChromosome>
         where TChromosome : IChromosome<TObjectivesValue>
     {
         private readonly IComparer<TChromosome> _offspringComparer;
@@ -35,7 +36,8 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
                 return uniqueOffspring;
             }
 
-            var fronts = FastNondominatedSorter.Sort(uniqueOffspring, _offspringComparer);
+            var fronts = FastNondominatedSorter
+                .Sort(uniqueOffspring, _offspringComparer);
 
             var selectedOffspring = new List<TChromosome>();
             IEnumerable<TChromosome> lastFront = new TChromosome[] { };
@@ -52,7 +54,9 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
 
             if (selectedOffspring.Count >= expectedOffspringCount)
             {
-                return selectedOffspring.Take(expectedOffspringCount).ToImmutableHashSet();
+                return selectedOffspring
+                    .Take(expectedOffspringCount)
+                    .ToImmutableHashSet();
             }
 
             return await _selector.SelectAsync(

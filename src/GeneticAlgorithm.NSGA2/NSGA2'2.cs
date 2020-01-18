@@ -7,12 +7,13 @@ using EvolutionaryAlgorithm.Abstraction;
 
 namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
 {
-    public class NSGA2<TChromosome, TObjective> : IEvolutionaryAlgorithm<TChromosome>
+    public class NSGA2<TChromosome, TObjective> :
+        IEvolutionaryAlgorithm<TChromosome>
     {
         private readonly IReproduction<TChromosome> _crossover;
         private readonly IReproduction<TChromosome> _mutation;
         private readonly IEvaluator<TChromosome> _evaluator;
-        private IReinsertion<TChromosome> _reinsertion;
+        private readonly IReinsertion<TChromosome> _reinsertion;
 
         public NSGA2(IReproduction<TChromosome> crossover,
             IReproduction<TChromosome> mutation,
@@ -45,13 +46,20 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2
                 while (!token.IsCancellationRequested)
                 {
                     var expectedCount = ExpectedResultCount ?? population.Count;
-                    var offspring = await _crossover.ReproduceAsync(population, token);
+                    var offspring = await _crossover
+                        .ReproduceAsync(population, token);
                     if (_mutation != null)
-                        offspring = offspring.Union(await _mutation.ReproduceAsync(population, token));
-                    var uniqueOffspring = offspring.Union(population).ToImmutableHashSet();
+                        offspring = offspring.Union(
+                            await _mutation.ReproduceAsync(population, token));
+                    var uniqueOffspring = offspring
+                        .Union(population)
+                        .ToImmutableHashSet();
                     await _evaluator.EvaluateAsync(uniqueOffspring, token);
                     population = await _reinsertion.SelectAsync(
-                        new TChromosome[] { }, uniqueOffspring, expectedCount, token);
+                        new TChromosome[] { },
+                        uniqueOffspring,
+                        expectedCount,
+                        token);
                     OnEvolvedOnce?.Invoke(population);
                 }
             }

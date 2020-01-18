@@ -17,7 +17,8 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2.OffspringSelectors
         }
 
         protected override ImmutableHashSet<TChromosome> SelectMeasurableOffspring(
-            ImmutableHashSet<TChromosome> elite, ImmutableHashSet<TChromosome> last)
+            ImmutableHashSet<TChromosome> elite,
+            ImmutableHashSet<TChromosome> last)
         {
             return last;
         }

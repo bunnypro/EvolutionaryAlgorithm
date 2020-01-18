@@ -40,7 +40,8 @@ namespace EvolutionaryAlgorithm.GeneticAlgorithm.NSGA2.OffspringSelectors
                 var ordered = joined.OrderBy(chromosome =>
                         _mapper.GetValue(objective, chromosome.Fitness))
                     .ThenBy(chromosome =>
-                        _objectives.Average(obj => _mapper.GetValue(obj, chromosome.Fitness)))
+                        _objectives.Average(obj =>
+                            _mapper.GetValue(obj, chromosome.Fitness)))
                     .ToImmutableArray();
 
                 var first = ordered.First();
